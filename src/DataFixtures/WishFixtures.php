@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\Wish;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -30,7 +31,7 @@ class WishFixtures extends Fixture implements DependentFixtureInterface
                 ->setAuthor($faker->name())
                 ->setIsPublished(true)
                 ->setDateCreated($faker->dateTimeBetween('-1 year', 'now'))
-                ->setCategory($this->getReference($faker->randomElement($categoryRefs)))
+                ->setCategory($this->getReference($faker->randomElement($categoryRefs), Category::class))
             ;
 
             $manager->persist($wish);
