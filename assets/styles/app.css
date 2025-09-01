@@ -1,3 +1,334 @@
-body {
-    background-color: skyblue;
+/* Styles globaux */
+:root {
+    /* Palette principale */
+    --bs-primary: #7c3aed;          /* violet 600 */
+    --bs-primary-rgb: 124, 58, 237;
+    --bs-secondary: #0ea5e9;        /* cyan 500 (utilisé comme accent) */
+    --bs-secondary-rgb: 14, 165, 233;
+    --bs-info: #22d3ee;             /* cyan 400 */
+    --bs-info-rgb: 34, 211, 238;
+    --bs-link-color: #6d28d9; /* violet 700 (meilleur contraste) */
+    --bs-link-hover-color: #5b21b6; /* violet 800 */
+    --bs-body-bg: #f7f8fb;          /* fond clair adouci */
+
+    /* Harmonisation des variantes ‘subtle’/‘emphasis’ */
+    --bs-primary-text-emphasis: #4c1d95;  /* violet 900 */
+    --bs-primary-bg-subtle: #ede9fe;      /* violet 100 */
+    --bs-primary-border-subtle: #c4b5fd;  /* violet 300 */
+
+    --bs-secondary-text-emphasis: #0c4a6e; /* cyan 900 */
+    --bs-secondary-bg-subtle: #ecfeff;     /* cyan 50 */
+    --bs-secondary-border-subtle: #67e8f9; /* cyan 300 */
+
+    /* ===== Glassmorphism (bulle vitre) ===== */
+    --glass-blur: 16px;
+    --glass-radius: 18px;
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-border: rgba(124, 58, 237, 0.18);
+    --glass-shadow: 0 .75rem 2rem rgba(0,0,0,.08);
+    --glass-shadow-hover: 0 1rem 2.25rem rgba(0,0,0,.12);
 }
+html {
+    background-color: var(--bs-body-bg);
+    background-image:
+        radial-gradient(1000px 420px at -10% -10%, rgba(var(--bs-primary-rgb), .18), transparent 60%),
+        radial-gradient(820px 340px at 110% 20%, rgba(var(--bs-secondary-rgb), .16), transparent 60%),
+        linear-gradient(120deg, #f5f6ff 0%, #eef1ff 100%);
+    background-attachment: fixed, fixed, fixed;
+    background-repeat: no-repeat;
+}
+html[data-bs-theme="dark"] {
+    --glass-bg: rgba(15, 18, 34, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 .75rem 2rem rgba(0,0,0,.35);
+    --glass-shadow-hover: 0 1rem 2.25rem rgba(0,0,0,.5);
+}
+
+/* Fond global avec dégradés plus visibles */
+body {
+    background-color: var(--bs-body-bg);
+    background-image:
+        radial-gradient(1000px 420px at -10% -10%, rgba(var(--bs-primary-rgb), .18), transparent 60%),
+        radial-gradient(820px 340px at 110% 20%, rgba(var(--bs-secondary-rgb), .16), transparent 60%),
+        linear-gradient(120deg, #f5f6ff 0%, #eef1ff 100%);
+    background-attachment: fixed, fixed, fixed;
+    background-repeat: no-repeat;
+}
+
+/* Blobs plus présents */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 44vw; height: 44vw;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: .32;
+    pointer-events: none;
+    z-index: 0;
+    animation: blob-float 24s ease-in-out infinite;
+}
+body::before { left: -10vw; top: -10vh; background: radial-gradient(circle at 30% 30%, rgba(var(--bs-primary-rgb), .25), transparent 60%); }
+body::after  { right: -10vw; top: 20vh; background: radial-gradient(circle at 70% 30%, rgba(var(--bs-secondary-rgb), .25), transparent 60%); animation-delay: -12s; }
+
+@keyframes blob-float {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(2vw, -1vh) scale(1.03); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+/* Soulignement dégradé sous l’en-tête */
+header.border-bottom { position: relative; }
+header.border-bottom::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: -1px;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(var(--bs-primary-rgb), .85), rgba(var(--bs-secondary-rgb), .85));
+    pointer-events: none;
+}
+
+/* Effet glow léger sur les cartes au hover */
+.card-hover {
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.12), 0 0 0 .15rem rgba(var(--bs-primary-rgb), .08);
+}
+
+/* Titre à texte dégradé */
+.text-gradient {
+    background: linear-gradient(90deg, rgba(var(--bs-primary-rgb), 1), rgba(var(--bs-secondary-rgb), 1));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+}
+
+/* Liens avec soulignement animé (utilitaire optionnel) */
+.link-underline {
+    position: relative;
+    text-decoration: none;
+}
+.link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: -2px;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, rgba(var(--bs-primary-rgb), 1), rgba(var(--bs-secondary-rgb), 1));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .2s ease;
+}
+.link-underline:hover::after {
+    transform: scaleX(1);
+}
+
+/* Troncature multi-lignes (2 lignes) */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Apparition en douceur des cartes (stagger) */
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+/* Appliquer l’animation par élément de grille (col-*) */
+.grid-animate > [class^="col-"],
+.grid-animate > [class*=" col-"] {
+    opacity: 0;
+    animation: fade-up .5s ease forwards;
+}
+.grid-animate > [class^="col-"]:nth-child(1),
+.grid-animate > [class*=" col-"]:nth-child(1) { animation-delay: .02s; }
+.grid-animate > [class^="col-"]:nth-child(2),
+.grid-animate > [class*=" col-"]:nth-child(2) { animation-delay: .06s; }
+.grid-animate > [class^="col-"]:nth-child(3),
+.grid-animate > [class*=" col-"]:nth-child(3) { animation-delay: .10s; }
+.grid-animate > [class^="col-"]:nth-child(4),
+.grid-animate > [class*=" col-"]:nth-child(4) { animation-delay: .14s; }
+.grid-animate > [class^="col-"]:nth-child(5),
+.grid-animate > [class*=" col-"]:nth-child(5) { animation-delay: .18s; }
+.grid-animate > [class^="col-"]:nth-child(6),
+.grid-animate > [class*=" col-"]:nth-child(6) { animation-delay: .22s; }
+
+/* Accessibilité: réduire/désactiver les animations si demandé */
+@media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+    .grid-animate > [class^="col-"],
+    .grid-animate > [class*=" col-"] { opacity: 1 !important; transform: none !important; }
+    body::before, body::after { animation: none !important; opacity: .12; }
+}
+
+/* États actifs/focus harmonisés avec la primaire */
+.navbar .nav-link.active, .navbar .nav-link:focus { color: var(--bs-primary) !important; }
+.navbar .nav-link:hover { color: var(--bs-link-hover-color); }
+
+/* Accent lisible sur fond clair (pour badges/labels) */
+.accent-bg {
+    background-color: rgba(var(--bs-secondary-rgb), .12) !important;
+    color: #075985 !important; /* cyan 800 pour un contraste suffisant */
+}
+.accent-border { border-color: rgba(var(--bs-secondary-rgb), .35) !important; }
+
+/* Anneau de focus cohérent (renforce la perception) */
+:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .25);
+}
+
+/* Hero plus marqué */
+.hero {
+    background:
+        radial-gradient(1200px 460px at 10% 0%, rgba(var(--bs-primary-rgb), .18), transparent 60%),
+        radial-gradient(900px 360px at 90% 10%, rgba(var(--bs-secondary-rgb), .16), transparent 60%),
+        var(--bs-body-bg);
+}
+.hero::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 6px;
+    background: radial-gradient(260px 90px at 20% 90%, rgba(var(--bs-primary-rgb), .12), transparent 60%);
+    pointer-events: none;
+}
+
+/* Surface vitrée générique */
+.glass-surface {
+    background: var(--glass-bg) !important;
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--glass-radius) !important;
+    box-shadow: var(--glass-shadow);
+}
+
+/* Cartes vitrées */
+.card-glass {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--glass-radius);
+    box-shadow: var(--glass-shadow);
+    transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.card-glass.card-hover:hover { box-shadow: var(--glass-shadow-hover); }
+
+/* Boutons vitrées */
+.btn-glass {
+    background: rgba(var(--bs-primary-rgb), .12);
+    color: var(--bs-emphasis-color);
+    border: 1px solid rgba(var(--bs-primary-rgb), .28);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+.btn-glass:hover { background: rgba(var(--bs-primary-rgb), .18); color: var(--bs-emphasis-color); }
+
+/* Bulles de métadonnées */
+.bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .35rem .6rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.45);
+    border: 1px solid rgba(var(--bs-primary-rgb), .18);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    box-shadow: 0 .25rem .75rem rgba(0,0,0,.06);
+    color: var(--bs-emphasis-color);
+    font-size: .85rem;
+}
+html[data-bs-theme="dark"] .bubble { background: rgba(15,18,34,.38); border-color: rgba(255,255,255,.12); }
+.bubble .dot { width: .4rem; height: .4rem; border-radius: 50%; background: rgba(var(--bs-secondary-rgb), 1); display: inline-block; }
+.bubble-muted { opacity: .9; }
+
+/* Champs “verre” optionnels */
+.glass-input {
+    background: rgba(255,255,255,.6);
+    border: 1px solid rgba(0,0,0,.08);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+html[data-bs-theme="dark"] .glass-input {
+    background: rgba(15,18,34,.5);
+    border-color: rgba(255,255,255,.12);
+    color: var(--bs-emphasis-color);
+}
+
+/* Léger bruit de fond pour renforcer l’effet verre */
+body::marker { display: none; }
+body .bg-noise {
+    pointer-events: none;
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+}
+
+/* Navbar verre dépoli (glass) */
+.navbar-glass {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .06);
+    transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+/* Icône toggler lisible en clair/sombre */
+.navbar-glass .navbar-toggler { border-color: rgba(33, 37, 41, .25); }
+.navbar-glass .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(33,37,41,0.95)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+html[data-bs-theme="dark"] .navbar-glass .navbar-toggler { border-color: rgba(248, 249, 250, .25); }
+html[data-bs-theme="dark"] .navbar-glass .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(248,249,250,0.95)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+/* État collé après scroll */
+.navbar-glass.is-scrolled {
+    box-shadow: 0 .5rem 1.2rem rgba(0, 0, 0, .1);
+}
+
+/* Transition douce lors d’un changement de thème */
+.theme-transition, .theme-transition * {
+    transition: background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+/* Hauteurs de la navbar flottante */
+:root { --nav-h-mobile: 58px; --nav-h-desktop: 64px; }
+
+/* Navbar “liquid glass” flottante et fixe en haut */
+.navbar-liquid {
+    position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px); left: 50%; transform: translateX(-50%);
+    width: min(1100px, calc(100% - 1.5rem));
+    z-index: 1030; /* au-dessus du contenu */
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    backdrop-filter: saturate(180%) blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: calc(var(--glass-radius) + 6px);
+    box-shadow: 0 .75rem 2rem rgba(0,0,0,.08);
+    min-height: var(--nav-h-mobile);
+    padding: .35rem .75rem;
+}
+@media (min-width: 992px) {
+    .navbar-liquid { min-height: var(--nav-h-desktop); padding: .5rem 1rem; width: min(1200px, calc(100% - 2rem)); }
+}
+/* Accentuation à la scroll */
+.navbar-liquid.is-scrolled { box-shadow: 0 1rem 2.25rem rgba(0,0,0,.12); }
+
+/* Icône toggler lisible en clair/sombre pour .navbar-liquid */
+.navbar-liquid .navbar-toggler { border-color: rgba(33, 37, 41, .25); }
+.navbar-liquid .navbar-toggler-icon { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(33,37,41,0.95)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
+html[data-bs-theme="dark"] .navbar-liquid .navbar-toggler { border-color: rgba(248, 249, 250, .25); }
+html[data-bs-theme="dark"] .navbar-liquid .navbar-toggler-icon { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(248,249,250,0.95)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
+
+/* Espaceur sous la navbar pour éviter le chevauchement du contenu */
+.nav-spacer { height: calc(var(--nav-h-mobile) + 24px); }
+@media (min-width: 992px) { .nav-spacer { height: calc(var(--nav-h-desktop) + 28px); } }
+
+/* Images de carte (liste des idées) */
+.card-img-clip { overflow: hidden; border-top-left-radius: var(--glass-radius); border-top-right-radius: var(--glass-radius); }
+.img-cover { width: 100%; height: 100%; object-fit: cover; display: block; }

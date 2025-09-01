@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/public/favicon.svg">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/public/favicon.svg" />
+              <option name="updatedContent" value="&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;64&quot; height=&quot;64&quot; viewBox=&quot;0 0 64 64&quot; role=&quot;img&quot; aria-label=&quot;Bucket-List&quot;&gt;&#10;  &lt;defs&gt;&#10;    &lt;linearGradient id=&quot;g&quot; x1=&quot;0&quot; x2=&quot;1&quot; y1=&quot;0&quot; y2=&quot;1&quot;&gt;&#10;      &lt;stop offset=&quot;0%&quot; stop-color=&quot;#0d6efd&quot;/&gt;&#10;      &lt;stop offset=&quot;100%&quot; stop-color=&quot;#20c997&quot;/&gt;&#10;    &lt;/linearGradient&gt;&#10;  &lt;/defs&gt;&#10;  &lt;rect rx=&quot;12&quot; ry=&quot;12&quot; width=&quot;64&quot; height=&quot;64&quot; fill=&quot;url(#g)&quot;/&gt;&#10;  &lt;path d=&quot;M20 22h24l-2 22a8 8 0 0 1-8 7h-4a8 8 0 0 1-8-7z&quot; fill=&quot;none&quot; stroke=&quot;#fff&quot; stroke-width=&quot;4&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/&gt;&#10;  &lt;path d=&quot;M26 32l6 6 10-10&quot; fill=&quot;none&quot; stroke=&quot;#fff&quot; stroke-width=&quot;4&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/&gt;&#10;&lt;/svg&gt;&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

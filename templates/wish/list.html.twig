@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Idées - Bucket-List{% endblock %}
+
+{% block body %}
+<div class="py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="mb-0 text-gradient">Liste des idées</h1>
+        <a href="{{ path('app_wish_formWish') }}" class="btn btn-primary">Ajouter une idée</a>
+    </div>
+
+    <div class="card shadow-sm mb-4 card-hover card-glass">
+        <div class="card-body">
+            <form method="get" action="{{ path('app_wish_list') }}" class="row g-3 align-items-end">
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                    <label for="q" class="form-label">Rechercher</label>
+                    <input id="q" type="search" name="q" class="form-control glass-input" placeholder="Rechercher une idée..." value="{{ q|default('') }}">
+                </div>
+                <div class="col-sm-6 col-md-3 col-lg-3">
+                    <label for="author" class="form-label">Auteur</label>
+                    <select id="author" name="author" class="form-select glass-input">
+                        <option value="">Tous les auteurs</option>
+                        {% for a in authors %}
+                            <option value="{{ a }}" {% if author is defined and author == a %}selected{% endif %}>{{ a }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-6 col-md-3 col-lg-3">
+                    <label for="order" class="form-label">Date</label>
+                    <select id="order" name="order" class="form-select glass-input">
+                        <option value="DESC" {% if order|upper == 'DESC' %}selected{% endif %}>Plus récentes d'abord</option>
+                        <option value="ASC" {% if order|upper == 'ASC' %}selected{% endif %}>Plus anciennes d'abord</option>
+                    </select>
+                </div>
+                <div class="col-sm-6 col-md-2 col-lg-3">
+                    <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                </div>
+                {% if q or author or (order and order != 'DESC') %}
+                    <div class="col-12">
+                        <a href="{{ path('app_wish_list') }}" class="btn btn-glass btn-sm">Réinitialiser les filtres</a>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    {% if wishes is not defined or wishes is empty %}
+        <div class="alert alert-info">Aucune idée trouvée{% if q is defined and q %} pour « {{ q }} »{% endif %}.</div>
+    {% else %}
+        {% if q is defined and q or author is defined and author or order is defined and order %}
+            <p class="text-muted mb-3">
+                {% set parts = [] %}
+                {% if q %}{% set parts = parts|merge(['« ' ~ q ~ ' »']) %}{% endif %}
+                {% if author %}{% set parts = parts|merge(['auteur: ' ~ author]) %}{% endif %}
+                {% if order %}{% set parts = parts|merge(['tri: ' ~ (order == 'ASC' ? 'plus anciennes' : 'plus récentes')]) %}{% endif %}
+                Filtres: {{ parts|join(', ') }} — {{ wishes|length }} idée(s)
+            </p>
+        {% endif %}
+
+        <div class="row g-3 grid-animate">
+            {% for wish in wishes %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 card-hover card-glass">
+                        {% if wish.image %}
+                            <div class="ratio ratio-16x9 card-img-clip">
+                                <img src="{{ asset('uploads/' ~ wish.image) }}" alt="{{ wish.title }}" class="img-cover" loading="lazy" decoding="async">
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title mb-2">
+                                <a href="{{ path('app_wish_detail', { id: wish.id }) }}" class="stretched-link text-decoration-none link-underline">{{ wish.title }}</a>
+                            </h5>
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                <span class="bubble bubble-muted"><span class="dot"></span>{{ wish.author }}</span>
+                                <span class="bubble bubble-muted">{{ wish.dateCreated|date('d/m/Y') }}</span>
+                            </div>
+                            {% if wish.description %}
+                                <p class="card-text text-muted text-truncate-2">{{ wish.description }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pt-0 px-3 pb-3 d-flex justify-content-end">
+                            <a href="{{ path('app_wish_detail', { id: wish.id }) }}" class="btn btn-sm btn-glass">Détails</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

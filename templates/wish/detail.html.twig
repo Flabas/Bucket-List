@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail idée #{{ wish.id }} - Bucket-List{% endblock %}
+
+{% block body %}
+<div class="py-4">
+    <div class="mb-3 d-flex gap-2 align-items-center">
+        <a href="{{ path('app_wish_list') }}" class="btn btn-glass btn-sm">← Retour à la liste</a>
+    </div>
+
+    <div class="card card-glass card-hover">
+        <div class="card-body">
+            <h1 class="h3 mb-3 text-gradient">{{ wish.title }}</h1>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <span class="bubble bubble-muted"><span class="dot"></span>{{ wish.author }}</span>
+                <span class="bubble bubble-muted">{{ wish.dateCreated|date('d/m/Y H:i') }}</span>
+            </div>
+            <p class="mb-0">{{ wish.description ?? 'Aucune description.' }}</p>
+            <div class="mt-4 d-flex gap-2">
+                <a href="{{ path('app_wish_edit', { id: wish.id }) }}" class="btn btn-primary">Modifier l'idée</a>
+                <form action="{{ path('app_wish_delete', { id: wish.id }) }}" method="post" onsubmit="return confirm('Confirmer la suppression ?');" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_wish_' ~ wish.id) }}">
+                    <button type="submit" class="btn btn-outline-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_edit ? ('Modifier l\'idée #' ~ (form.vars.value.id ?? '')) : 'Nouvelle idée' }} - Bucket-List{% endblock %}
+
+{% block body %}
+<div class="py-4">
+    <h1 class="mb-3 text-gradient">{{ is_edit ? 'Modifier une idée' : 'Ajouter une idée' }}</h1>
+
+    {% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card shadow-sm card-hover card-glass">
+                <div class="card-body">
+                    {{ form_start(form) }}
+                        {% if is_edit and form.vars.value.image %}
+                            <div class="mb-3">
+                                <label class="form-label">Image actuelle</label>
+                                <div class="ratio ratio-16x9 card-img-clip">
+                                    <img src="{{ asset('uploads/' ~ form.vars.value.image) }}" alt="Aperçu image" class="img-cover" loading="lazy" decoding="async">
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {{ form_row(form.title) }}
+                        {{ form_row(form.description) }}
+                        {{ form_row(form.author) }}
+                        {{ form_row(form.image) }}
+                        {{ form_row(form.isPublished) }}
+                        <div class="d-flex gap-2 mt-3">
+                            <a href="{{ is_edit ? path('app_wish_detail', { id: form.vars.value.id }) : path('app_wish_list') }}" class="btn btn-glass">Annuler</a>
+                            <button type="submit" class="btn btn-primary">{{ is_edit ? 'Mettre à jour' : 'Enregistrer' }}</button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

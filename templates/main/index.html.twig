@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Bucket-List{% endblock %}
+
+{% block body %}
+<div class="py-4">
+    <div class="p-5 mb-4 hero glass-surface">
+        <div class="container py-5">
+            <h1 class="display-5 fw-bold mb-3 text-gradient">Bienvenue sur Bucket-List</h1>
+            <p class="col-md-10 col-lg-8 fs-5 text-muted mb-4">
+                Collectez, explorez et réalisez vos meilleures idées de vie. Parcourez les inspirations de la communauté
+                et gardez une trace de ce que vous souhaitez accomplir.
+            </p>
+            <div class="d-flex gap-2">
+                <a class="btn btn-primary btn-lg" href="{{ path('app_wish_list') }}">Découvrir les idées</a>
+                <a class="btn btn-glass btn-lg" href="{{ path('app_about') }}">En savoir plus</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 grid-animate">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 card-glass card-hover">
+                <div class="card-body">
+                    <h5 class="card-title">Trouvez l’inspiration</h5>
+                    <p class="card-text text-muted">Parcourez des idées variées et découvrez de nouvelles envies à ajouter à votre liste.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 card-glass card-hover">
+                <div class="card-body">
+                    <h5 class="card-title">Organisez vos projets</h5>
+                    <p class="card-text text-muted">Visualisez vos objectifs en un clin d’œil grâce à une présentation claire et moderne.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 card-glass card-hover">
+                <div class="card-body">
+                    <h5 class="card-title">Passez à l’action</h5>
+                    <p class="card-text text-muted">Concentrez-vous sur l’essentiel et commencez à réaliser vos idées dès aujourd’hui.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
