@@ -30,6 +30,8 @@ class WishRepository extends ServiceEntityRepository
         $dateOrder = strtoupper($dateOrder) === 'ASC' ? 'ASC' : 'DESC';
 
         $qb = $this->createQueryBuilder('w')
+            ->leftJoin('w.category', 'c')
+            ->addSelect('c')
             ->andWhere('w.isPublished = :published')
             ->setParameter('published', true)
             ->orderBy('w.dateCreated', $dateOrder);

@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Wish;
+use App\Entity\Category;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -41,6 +43,13 @@ class WishType extends AbstractType
                     'maxlength' => 50,
                     'class' => 'glass-input',
                 ],
+            ])
+            ->add('category', EntityType::class, [
+                'class' => Category::class,
+                'choice_label' => 'name',
+                'label' => 'Catégorie',
+                'placeholder' => 'Sélectionnez une catégorie',
+                'attr' => ['class' => 'glass-input'],
             ])
             ->add('image', FileType::class, [
                 'label' => 'Image (PNG/JPG/WEBP)',

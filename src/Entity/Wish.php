@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\WishRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Category;
 
 #[ORM\Entity(repositoryClass: WishRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -16,8 +17,8 @@ class Wish
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le titre ne peut pas être vide.')]
-    #[Assert\Length(
+    #[\Symfony\Component\Validator\Constraints\NotBlank(message: 'Le titre ne peut pas être vide.')]
+    #[\Symfony\Component\Validator\Constraints\Length(
         max: 255,
         maxMessage: 'Le titre ne peut pas dépasser {{ limit }} caractères.'
     )]
@@ -27,8 +28,8 @@ class Wish
     private ?string $description = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank(message: 'L\'auteur ne peut pas être vide.')]
-    #[Assert\Length(
+    #[\Symfony\Component\Validator\Constraints\NotBlank(message: 'L\'auteur ne peut pas être vide.')]
+    #[\Symfony\Component\Validator\Constraints\Length(
         max: 50,
         maxMessage: 'Le nom de l\'auteur ne peut pas dépasser {{ limit }} caractères.'
     )]
@@ -45,6 +46,11 @@ class Wish
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
+
+    #[ORM\ManyToOne(inversedBy: 'wishes')]
+    #[ORM\JoinColumn(nullable: true)]
+    #[\Symfony\Component\Validator\Constraints\NotNull(message: 'La catégorie est requise.')]
+    private ?Category $category = null;
 
     public function getId(): ?int
     {
@@ -132,6 +138,17 @@ class Wish
     {
         $this->image = $image;
 
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
         return $this;
     }
 

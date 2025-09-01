@@ -14,6 +14,9 @@
             <div class="d-flex flex-wrap gap-2 mb-3">
                 <span class="bubble bubble-muted"><span class="dot"></span>{{ wish.author }}</span>
                 <span class="bubble bubble-muted">{{ wish.dateCreated|date('d/m/Y H:i') }}</span>
+                {% if wish.category %}
+                    <span class="bubble bubble-muted">Catégorie: {{ wish.category.name }}</span>
+                {% endif %}
             </div>
             <p class="mb-0">{{ wish.description ?? 'Aucune description.' }}</p>
             <div class="mt-4 d-flex gap-2">
