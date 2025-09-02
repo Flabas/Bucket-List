@@ -24,7 +24,6 @@ class WishType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Ex: Marcher sur le GR20',
                     'maxlength' => 255,
-                    'class' => 'glass-input',
                 ],
             ])
             ->add('description', TextareaType::class, [
@@ -33,15 +32,6 @@ class WishType extends AbstractType
                 'attr' => [
                     'rows' => 6,
                     'placeholder' => 'Détaillez votre idée... (optionnel)',
-                    'class' => 'glass-input',
-                ],
-            ])
-            ->add('author', TextType::class, [
-                'label' => 'Auteur',
-                'attr' => [
-                    'placeholder' => 'Votre nom',
-                    'maxlength' => 50,
-                    'class' => 'glass-input',
                 ],
             ])
             ->add('category', EntityType::class, [
@@ -49,7 +39,6 @@ class WishType extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'Catégorie',
                 'placeholder' => 'Sélectionnez une catégorie',
-                'attr' => ['class' => 'glass-input'],
             ])
             ->add('image', FileType::class, [
                 'label' => 'Image (PNG/JPG/WEBP)',

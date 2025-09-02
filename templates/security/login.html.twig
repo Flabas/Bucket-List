@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - Bucket-List{% endblock %}
+
+{% block body %}
+<div class="py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+            {% if app.user %}
+                <div class="alert alert-info d-flex justify-content-between align-items-center" role="alert">
+                    <div>
+                        Connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>
+                    </div>
+                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_logout') }}">Déconnexion</a>
+                </div>
+            {% endif %}
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="h3 mb-4 text-center">Connexion</h1>
+
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Pseudo</label>
+                            <input type="text"
+                                   id="username"
+                                   name="_username"
+                                   class="form-control"
+                                   placeholder="Votre pseudo"
+                                   value="{{ last_username }}"
+                                   autocomplete="username"
+                                   required
+                                   autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <input type="password"
+                                   id="password"
+                                   name="_password"
+                                   class="form-control"
+                                   placeholder="Votre mot de passe"
+                                   autocomplete="current-password"
+                                   required>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+
+                        <button class="btn btn-primary w-100" type="submit">Se connecter</button>
+                    </form>
+
+                    <hr class="my-4">
+                    <p class="text-center mb-0">
+                        Pas de compte ?
+                        <a href="{{ path('app_register') }}">Créer un compte</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

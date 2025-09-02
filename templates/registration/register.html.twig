@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h1 class="card-title text-center mb-4">Inscription</h1>
+
+                    {{ form_errors(registrationForm) }}
+
+                    {{ form_start(registrationForm) }}
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.pseudo, 'Pseudo') }}
+                            {{ form_widget(registrationForm.pseudo, {
+                                attr: { class: 'form-control', placeholder: 'Entrez votre pseudo' }
+                            }) }}
+                            {{ form_errors(registrationForm.pseudo) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.email, 'Nom') }}
+                            {{ form_widget(registrationForm.email, {
+                                attr: { class: 'form-control', placeholder: 'Entrez votre nom' }
+                            }) }}
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
+                            {{ form_widget(registrationForm.plainPassword, {
+                                attr: { class: 'form-control', placeholder: 'Entrez votre mot de passe' }
+                            }) }}
+                            {{ form_errors(registrationForm.plainPassword) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.agreeTerms, 'Accepter les termes et conditions') }}
+                            {{ form_widget(registrationForm.agreeTerms, {
+                                attr: { class: 'form-check-input' }
+                            }) }}
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+                    {{ form_end(registrationForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

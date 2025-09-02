@@ -65,4 +65,49 @@ class WishRepository extends ServiceEntityRepository
 
         return array_values(array_map(static fn(array $r) => $r['author'], $rows));
     }
+
+    /**
+     * Retourne les idées publiées paginées.
+     *
+     * @param string|null $term
+     * @param string|null $author
+     * @param string $dateOrder
+     * @param int $page
+     * @param int $limit
+     * @return array [wishes, totalPages, totalItems]
+     */
+    public function searchPublishedPaginated(?string $term, ?string $author = null, string $dateOrder = 'DESC', int $page = 1, int $limit = 9): array
+    {
+        $dateOrder = strtoupper($dateOrder) === 'ASC' ? 'ASC' : 'DESC';
+        $qb = $this->createQueryBuilder('w')
+            ->leftJoin('w.category', 'c')
+            ->addSelect('c')
+            ->andWhere('w.isPublished = :published')
+            ->setParameter('published', true)
+            ->orderBy('w.dateCreated', $dateOrder);
+
+        if ($term !== null && trim($term) !== '') {
+            $qb->andWhere('(w.title LIKE :t OR w.description LIKE :t OR w.author LIKE :t)')
+               ->setParameter('t', '%' . trim($term) . '%');
+        }
+        if ($author !== null && trim($author) !== '') {
+            $qb->andWhere('w.author = :a')
+               ->setParameter('a', trim($author));
+        }
+
+        $firstResult = ($page - 1) * $limit;
+        $qb->setFirstResult($firstResult)
+           ->setMaxResults($limit);
+
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($qb->getQuery());
+        $totalItems = count($paginator);
+        $totalPages = max(1, ceil($totalItems / $limit));
+        $wishes = iterator_to_array($paginator);
+
+        return [
+            'wishes' => $wishes,
+            'totalPages' => $totalPages,
+            'totalItems' => $totalItems,
+        ];
+    }
 }

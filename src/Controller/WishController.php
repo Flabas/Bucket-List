@@ -24,16 +24,21 @@ final class WishController extends AbstractController
         $q = $request->query->get('q');
         $author = $request->query->get('author');
         $order = $request->query->get('order', 'DESC');
+        $page = max(1, (int)$request->query->get('page', 1));
+        $limit = 9;
 
-        $wishes = $wishRepository->searchPublished($q, $author, $order);
+        $result = $wishRepository->searchPublishedPaginated($q, $author, $order, $page, $limit);
         $authors = $wishRepository->getPublishedAuthors();
 
         return $this->render('wish/list.html.twig', [
-            'wishes' => $wishes,
+            'wishes' => $result['wishes'],
             'q' => $q,
             'author' => $author,
             'order' => strtoupper($order) === 'ASC' ? 'ASC' : 'DESC',
             'authors' => $authors,
+            'page' => $page,
+            'totalPages' => $result['totalPages'],
+            'totalItems' => $result['totalItems'],
         ]);
     }
 
@@ -54,29 +59,38 @@ final class WishController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em, FileManager $fileManager): Response
     {
         $wish = new Wish();
+        $user = $this->getUser();
+        if (!$user || !method_exists($user, 'getPseudo')) {
+            $this->addFlash('error', "Vous devez être connecté pour créer une idée.");
+            return $this->redirectToRoute('app_wish_formWish');
+        }
+        $wish->setAuthor($user->getPseudo());
         $form = $this->createForm(WishType::class, $wish);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $file = $form->get('image')->getData();
-            if ($file instanceof UploadedFile) {
-
-                if ($name = $fileManager->upload($file, 'uploads', $form->get('image')->getName()))
-                {
-                    $wish->setImage($name);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $file = $form->get('image')->getData();
+                if ($file instanceof UploadedFile) {
+                    try {
+                        if ($name = $fileManager->upload($file, 'uploads', $form->get('image')->getName())) {
+                            $wish->setImage($name);
+                        }
+                    } catch (\Exception $e) {
+                        $this->addFlash('error', "Erreur lors de l'upload de l'image : " . $e->getMessage());
+                        return $this->redirectToRoute('app_wish_formWish');
+                    }
                 }
+
+                $em->persist($wish);
+                $em->flush();
+                $this->addFlash('success', 'Idée créée avec succès.');
+
+                return $this->redirectToRoute('app_wish_detail', ['id' => $wish->getId()]);
+            } else {
+                $this->addFlash('error', 'Le formulaire contient des erreurs.');
+                return $this->redirectToRoute('app_wish_formWish');
             }
-
-
-            $em->persist($wish);
-            $em->flush();
-            $this->addFlash('success', 'Idée créée avec succès.');
-
-            return $this->redirectToRoute('app_wish_detail', ['id' => $wish->getId()]);
-        }
-
-        if ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash('error', 'Le formulaire contient des erreurs.');
         }
 
         return $this->render('wish/formWish.html.twig', [
@@ -93,6 +107,18 @@ final class WishController extends AbstractController
             throw $this->createNotFoundException('Idée introuvable');
         }
 
+        // Autorisation: auteur OU admin
+        $user = $this->getUser();
+        if (!$user || !method_exists($user, 'getPseudo')) {
+            $this->addFlash('error', "Vous devez être connecté pour modifier cette idée.");
+            return $this->redirectToRoute('app_login');
+        }
+        $isAuthor = $wish->getAuthor() === $user->getPseudo();
+        if (!$isAuthor) {
+            $this->addFlash('error', "Vous n'êtes pas autorisé à modifier cette idée.");
+            return $this->redirectToRoute('app_wish_detail', ['id' => $wish->getId()]);
+        }
+
         $form = $this->createForm(WishType::class, $wish);
         $form->handleRequest($request);
 
@@ -104,6 +130,7 @@ final class WishController extends AbstractController
                 }
             }
 
+            // Conserver l'auteur d'origine, ou le remettre à l'auteur actuel ? Ici on garde l'auteur initial
             $wish->setDateUpdated(new \DateTime());
             $em->flush();
             $this->addFlash('success', 'Idée mise à jour.');
@@ -127,6 +154,19 @@ final class WishController extends AbstractController
     {
         if (!$wish) {
             throw $this->createNotFoundException('Idée introuvable');
+        }
+
+        // Autorisation: auteur OU admin
+        $user = $this->getUser();
+        if (!$user || !method_exists($user, 'getPseudo')) {
+            $this->addFlash('error', "Vous devez être connecté pour supprimer cette idée.");
+            return $this->redirectToRoute('app_login');
+        }
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        $isAuthor = $wish->getAuthor() === $user->getPseudo();
+        if (!$isAuthor && !$isAdmin) {
+            $this->addFlash('error', "Vous n'êtes pas autorisé à supprimer cette idée.");
+            return $this->redirectToRoute('app_wish_detail', ['id' => $wish->getId()]);
         }
 
         $token = $request->request->get('_token');

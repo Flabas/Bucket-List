@@ -7,7 +7,6 @@
         <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('vendor/bootstrap/dist/css/bootstrap.min.css') }}">
-            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}
 
         {% block javascripts %}
@@ -15,19 +14,17 @@
         {% endblock %}
     </head>
     <body class="d-flex flex-column min-vh-100">
-        <div class="bg-noise"></div>
-        <header class="mb-3">
+        <header>
             {% include 'navbar.html.twig' %}
         </header>
-        <div class="nav-spacer"></div>
 
-        <main class="container flex-fill">
+        <main class="container flex-fill py-3">
             {# Flash messages (erreurs, succès, infos) #}
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
                     <div class="alert alert-{{ label == 'error' ? 'danger' : (label == 'warning' ? 'warning' : (label == 'success' ? 'success' : 'info')) }} alert-dismissible fade show" role="alert">
                         {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
                     </div>
                 {% endfor %}
             {% endfor %}
