@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réinitialisation de votre mot de passe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 300;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .icon {
+            width: 60px;
+            height: 60px;
+            background-color: #007bff;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+        }
+        .security-tips {
+            background-color: #e7f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .security-tips h4 {
+            margin-top: 0;
+            color: #004085;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">🔐</div>
+            <h1>Réinitialisation de mot de passe</h1>
+        </div>
+
+        <div class="content">
+            <h2>Bonjour !</h2>
+
+            <p>Vous avez demandé la réinitialisation de votre mot de passe pour votre compte Bucket-List.</p>
+
+            <p>Pour définir un nouveau mot de passe, cliquez sur le bouton ci-dessous :</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" class="btn">
+                    🔑 Réinitialiser mon mot de passe
+                </a>
+            </div>
+
+            <p style="font-size: 14px; color: #6c757d;">
+                Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :<br>
+                <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" style="color: #007bff; word-break: break-all;">
+                    {{ url('app_reset_password', {token: resetToken.token}) }}
+                </a>
+            </p>
+
+            <div class="warning">
+                <strong>⚠️ Important :</strong><br>
+                {% if resetToken.expirationMessageKey is defined and resetToken.expirationMessageData is defined %}
+                    Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+                {% else %}
+                    Ce lien expirera dans 1 heure.
+                {% endif %}
+                <br>Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email.
+            </div>
+
+            <div class="security-tips">
+                <h4>🛡️ Conseils de sécurité</h4>
+                <ul>
+                    <li>Choisissez un mot de passe unique et complexe</li>
+                    <li>Utilisez au moins 8 caractères avec majuscules, minuscules, chiffres et symboles</li>
+                    <li>Ne partagez jamais votre mot de passe</li>
+                    <li>Déconnectez-vous des appareils partagés</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                Cet email a été envoyé automatiquement par Bucket-List.<br>
+                Si vous avez des questions, contactez notre support.
+            </p>
+            <p>© {{ "now"|date('Y') }} Bucket-List - Tous droits réservés</p>
+        </div>
+    </div>
+</body>
+</html>
+

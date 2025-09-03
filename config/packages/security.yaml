@@ -24,6 +24,14 @@ security:
                 path: app_logout
                 # where to redirect after logout
                 # target: app_any_route
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 1209600 # 14 jours
+                path: '/'
+                secure: auto
+                samesite: lax
+                httponly: true
+                remember_me_parameter: _remember_me
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -41,6 +49,7 @@ security:
         - { path: ^/categories, roles: ROLE_ADMIN }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/wishes/formWish, roles: ROLE_USER }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
 
 
 

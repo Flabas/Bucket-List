@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test Email - Diagnostic{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Diagnostic Email - Résultats</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            {% for test_name, result in results %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>Test: {{ test_name|title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if 'SUCCESS' in result %}
+                            <div class="alert alert-success">
+                                {{ result }}
+                            </div>
+                        {% elseif 'ERROR' in result %}
+                            <div class="alert alert-danger">
+                                {{ result }}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                {{ result }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="alert alert-warning">
+                <h6>Instructions:</h6>
+                <ul>
+                    <li>Vérifiez que Papercut SMTP est lancé sur le port 1025</li>
+                    <li>Si les tests montrent "SUCCESS", les emails devraient apparaître dans Papercut</li>
+                    <li>Si vous voyez des erreurs, elles indiquent le problème de configuration</li>
+                </ul>
+            </div>
+
+            <a href="{{ path('app_forgot_password_request') }}" class="btn btn-primary">
+                Tester Mot de Passe Oublié
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

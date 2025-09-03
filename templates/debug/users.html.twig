@@ -1,0 +1,306 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Debug - Gestion des utilisateurs{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <!-- En-tête avec statistiques -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1>
+                    <i class="fas fa-bug text-warning me-2"></i>
+                    Debug - Gestion des utilisateurs
+                </h1>
+                <span class="badge bg-secondary fs-6">Mode développement</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages flash -->
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                <i class="fas fa-{{ type == 'success' ? 'check-circle' : (type == 'warning' ? 'exclamation-triangle' : 'info-circle') }} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <h3 class="text-primary">
+                        <i class="fas fa-users fa-2x mb-2"></i><br>
+                        {{ stats.total_users }}
+                    </h3>
+                    <p class="card-text">Utilisateurs total</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-danger">
+                <div class="card-body text-center">
+                    <h3 class="text-danger">
+                        <i class="fas fa-user-shield fa-2x mb-2"></i><br>
+                        {{ stats.admin_users }}
+                    </h3>
+                    <p class="card-text">Administrateurs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <h3 class="text-warning">
+                        <i class="fas fa-key fa-2x mb-2"></i><br>
+                        {{ stats.pending_reset_requests }}
+                    </h3>
+                    <p class="card-text">Demandes de reset</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-tools me-2"></i>
+                Actions rapides
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <a href="{{ path('app_debug_create_user') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-user-plus fa-lg mb-2 d-block"></i>
+                        Créer utilisateur test
+                        <small class="d-block text-muted">test@example.com</small>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <a href="{{ path('app_debug_create_admin') }}" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-user-shield fa-lg mb-2 d-block"></i>
+                        Créer admin test
+                        <small class="d-block text-muted">admin@example.com</small>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <a href="{{ path('app_debug_clean_reset_requests') }}" class="btn btn-outline-warning w-100">
+                        <i class="fas fa-broom fa-lg mb-2 d-block"></i>
+                        Nettoyer les resets
+                        <small class="d-block text-muted">{{ stats.pending_reset_requests }} en attente</small>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="modal" data-bs-target="#deleteTestModal">
+                        <i class="fas fa-trash-alt fa-lg mb-2 d-block"></i>
+                        Supprimer tests
+                        <small class="d-block text-muted">Nettoyer la DB</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des utilisateurs -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>
+                Liste des utilisateurs ({{ stats.total_users }})
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if users %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Pseudo</th>
+                                <th>Email</th>
+                                <th>Rôles</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr class="{{ user.id == app.user.id ? 'table-info' : '' }}">
+                                    <td>{{ user.id }}</td>
+                                    <td>
+                                        {{ user.pseudo }}
+                                        {% if user.id == app.user.id %}
+                                            <span class="badge bg-info ms-1">Vous</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        {% for role in user.roles %}
+                                            <span class="badge bg-{{ role == 'ROLE_ADMIN' ? 'danger' : 'secondary' }} me-1">
+                                                {{ role == 'ROLE_ADMIN' ? 'Admin' : 'User' }}
+                                            </span>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% if user.email in ['test@example.com', 'admin@example.com'] %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-flask me-1"></i>Test
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Réel
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ path('admin_user_show', {'id': user.id}) }}"
+                                               class="btn btn-outline-info"
+                                               title="Voir les détails">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ path('admin_user_edit', {'id': user.id}) }}"
+                                               class="btn btn-outline-warning"
+                                               title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Aucun utilisateur trouvé</h5>
+                    <p class="text-muted">Créez des utilisateurs de test pour commencer.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Demandes de réinitialisation -->
+    {% if resetRequests %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-key me-2"></i>
+                    Demandes de réinitialisation actives ({{ resetRequests|length }})
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Utilisateur</th>
+                                <th>Demandé le</th>
+                                <th>Expire le</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in resetRequests %}
+                                <tr>
+                                    <td>{{ request.id }}</td>
+                                    <td>{{ request.user.pseudo }} ({{ request.user.email }})</td>
+                                    <td>{{ request.requestedAt|date('d/m/Y H:i') }}</td>
+                                    <td>{{ request.expiresAt|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        {% if request.expiresAt > date() %}
+                                            <span class="badge bg-success">Valide</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Expiré</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Liens utiles -->
+    <div class="card mt-4 border-secondary">
+        <div class="card-header">
+            <h6 class="mb-0">
+                <i class="fas fa-external-link-alt me-2"></i>
+                Liens utiles
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li><a href="{{ path('admin_user_index') }}" class="text-decoration-none">
+                            <i class="fas fa-users me-2"></i>Gestion des utilisateurs
+                        </a></li>
+                        <li><a href="{{ path('app_test_mail') }}" class="text-decoration-none">
+                            <i class="fas fa-envelope me-2"></i>Test Email
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li><a href="{{ path('app_forgot_password_request') }}" class="text-decoration-none">
+                            <i class="fas fa-key me-2"></i>Test Reset Password
+                        </a></li>
+                        <li><a href="{{ path('app_category_list') }}" class="text-decoration-none">
+                            <i class="fas fa-tags me-2"></i>Gestion des catégories
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteTestModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Confirmer la suppression
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer tous les utilisateurs de test ?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Cette action supprimera :</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>test@example.com</li>
+                        <li>admin@example.com</li>
+                    </ul>
+                </div>
+                <small class="text-muted">
+                    <i class="fas fa-shield-alt me-1"></i>
+                    Votre compte actuel ne sera pas supprimé.
+                </small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Annuler
+                </button>
+                <a href="{{ path('app_debug_delete_test_users') }}" class="btn btn-danger">
+                    <i class="fas fa-trash-alt me-2"></i>Supprimer
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

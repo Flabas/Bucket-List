@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Email de réinitialisation envoyé{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fas fa-envelope-circle-check fa-4x text-success"></i>
+                        </div>
+                        <h2 class="card-title text-success">Email envoyé !</h2>
+                    </div>
+
+                    {# Messages flash pour le diagnostic #}
+                    {% for type, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-{{ type == 'success' ? 'check-circle' : (type == 'error' or type == 'danger') ? 'exclamation-triangle' : 'info-circle' }} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <div class="alert alert-info border-0" style="background-color: #e3f2fd;">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-info-circle fa-lg text-info"></i>
+                            </div>
+                            <div>
+                                <h6 class="alert-heading">Instructions</h6>
+                                <p class="mb-2">
+                                    Si un compte correspondant à votre email existe, un email vient d'être envoyé contenant un lien pour réinitialiser votre mot de passe.
+                                </p>
+                                {% if resetToken.expirationMessageKey is defined and resetToken.expirationMessageData is defined %}
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+                                    </small>
+                                {% else %}
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Ce lien expirera dans 1 heure.
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning border-0" style="background-color: #fff8e1;">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-exclamation-triangle fa-lg text-warning"></i>
+                            </div>
+                            <div>
+                                <h6 class="alert-heading">Vous ne recevez pas l'email ?</h6>
+                                <ul class="mb-0 ps-3">
+                                    <li>Vérifiez votre dossier spam/courrier indésirable</li>
+                                    <li>Assurez-vous d'avoir saisi la bonne adresse email</li>
+                                    <li>Attendez quelques minutes, la livraison peut prendre du temps</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ path('app_forgot_password_request') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-redo me-2"></i>
+                            Renvoyer un email
+                        </a>
+                        <a href="{{ path('app_login') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Retour à la connexion
+                        </a>
+                    </div>
+
+                    {% if app.user and 'ROLE_ADMIN' in app.user.getRoles() %}
+                        <hr class="my-4">
+                        <div class="text-center">
+                            <h6 class="text-muted mb-3">Outils d'administration</h6>
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('app_test_mail') }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-cog me-1"></i>
+                                    Test Email
+                                </a>
+                                <a href="{{ path('app_debug_clean_reset_requests') }}" class="btn btn-sm btn-outline-warning">
+                                    <i class="fas fa-broom me-1"></i>
+                                    Nettoyer les demandes
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

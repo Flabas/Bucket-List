@@ -11,7 +11,7 @@
                     <div>
                         Connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>
                     </div>
-                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_logout') }}">Déconnexion</a>
+                    <a class="btn btn-ghost btn-sm" href="{{ path('app_logout') }}">Déconnexion</a>
                 </div>
             {% endif %}
 
@@ -48,16 +48,24 @@
                                    required>
                         </div>
 
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me" name="_remember_me" value="on">
+                            <label class="form-check-label" for="remember_me">Se souvenir de moi</label>
+                        </div>
+
                         <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
 
-                        <button class="btn btn-primary w-100" type="submit">Se connecter</button>
+                        <button class="btn btn-gold w-100" type="submit">Se connecter</button>
                     </form>
 
                     <hr class="my-4">
                     <p class="text-center mb-0">
                         Pas de compte ?
                         <a href="{{ path('app_register') }}">Créer un compte</a>
+                    </p>
+                    <p class="text-center mt-3">
+                        <a href="{{ path('app_forgot_password_request') }}">Mot de passe oublié&nbsp;?</a>
                     </p>
                 </div>
             </div>

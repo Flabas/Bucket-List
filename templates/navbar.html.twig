@@ -19,14 +19,46 @@
                     <a class="nav-link {{ app.request.attributes.get('_route') == 'app_about' ? 'active' }}" href="{{ path('app_about') }}">About us</a>
                 </li>
                 {% if app.user and 'ROLE_ADMIN' in app.user.getRoles() %}
-                    <li class="nav-item">
-                        <a class="nav-link {{ app.request.attributes.get('_route') starts with 'app_category_' ? 'active' }}" href="{{ path('app_category_list') }}">Catégories</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'app_category_' or app.request.attributes.get('_route') starts with 'admin_user_' ? 'active' }}"
+                           href="#"
+                           id="adminDropdown"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="fas fa-cogs"></i> Administration
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                            <li>
+                                <a class="dropdown-item {{ app.request.attributes.get('_route') starts with 'app_category_' ? 'active' }}"
+                                   href="{{ path('app_category_list') }}">
+                                    <i class="fas fa-tags"></i> Gestion des catégories
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {{ app.request.attributes.get('_route') starts with 'admin_user_' ? 'active' }}"
+                                   href="{{ path('admin_user_index') }}">
+                                    <i class="fas fa-users"></i> Gestion des utilisateurs
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ path('app_test_mail') }}">
+                                    <i class="fas fa-envelope-open-text"></i> Test Email
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ path('app_debug_list_users') }}">
+                                    <i class="fas fa-bug"></i> Debug Utilisateurs
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 {% endif %}
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 {% if app.user %}
-                    <p class="nav-item">
+                    <p class="nav-item d-flex align-items-center mb-0">
                         <span class="me-2">Bonjour, <strong>{{ app.user.pseudo }}</strong>!</span>
                     </p>
                     <li class="nav-item">
