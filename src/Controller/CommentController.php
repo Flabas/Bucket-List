@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\Wish;
 use App\Entity\User;
+use App\Services\Censurator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class CommentController extends AbstractController
 {
     #[Route('/wishes/{id}/comments', name: 'app_comment_add', requirements: ['id' => '\\d+'], methods: ['POST'])]
-    public function add(Wish $wish = null, Request $request, EntityManagerInterface $em): Response
+    public function add(Wish $wish = null, Request $request, EntityManagerInterface $em, Censurator $censurator): Response
     {
         if (!$wish) {
             throw $this->createNotFoundException('Idée introuvable');
@@ -44,10 +45,13 @@ class CommentController extends AbstractController
             return $this->redirectToRoute('app_wish_detail', ['id' => $wish->getId()]);
         }
 
+        // Application de la censure sur le contenu du commentaire
+        $censoredContent = $censurator->purify($content);
+
         $comment = new Comment();
         $comment->setWish($wish);
         $comment->setAuthor($user);
-        $comment->setContent($content);
+        $comment->setContent($censoredContent);
         $comment->setRating($rating);
 
         $em->persist($comment);
@@ -58,7 +62,7 @@ class CommentController extends AbstractController
     }
 
     #[Route('/comments/{id}/edit', name: 'app_comment_edit', requirements: ['id' => '\\d+'], methods: ['GET', 'POST'])]
-    public function edit(Comment $comment = null, Request $request, EntityManagerInterface $em): Response
+    public function edit(Comment $comment = null, Request $request, EntityManagerInterface $em, Censurator $censurator): Response
     {
         if (!$comment) {
             throw $this->createNotFoundException('Commentaire introuvable');
@@ -82,7 +86,10 @@ class CommentController extends AbstractController
                 return $this->redirectToRoute('app_comment_edit', ['id' => $comment->getId()]);
             }
 
-            $comment->setContent($content);
+            // Application de la censure sur le contenu modifié du commentaire
+            $censoredContent = $censurator->purify($content);
+
+            $comment->setContent($censoredContent);
             $comment->setRating($rating);
             $em->flush();
 

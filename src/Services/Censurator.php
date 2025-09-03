@@ -5,7 +5,6 @@ namespace App\Services;
 class Censurator
 {
     private array $banword = [];
-    private string $bannedWordsFile;
 
     public function __construct(string $projectDir)
     {
@@ -17,32 +16,17 @@ class Censurator
     {
         if (file_exists($this->bannedWordsFile)) {
             $content = file_get_contents($this->bannedWordsFile);
-            if ($content !== false) {
-                $words = explode("\n", $content);
-                $this->banword = array_filter(array_map('trim', $words), function($word) {
-                    return !empty($word) && !str_starts_with($word, '#');
-                });
-            }
+            $this->banword = array_filter(
+                array_map('trim', explode("\n", $content ?: '')),
+                fn($word) => $word && !str_starts_with($word, '#')
+            );
         }
     }
 
     public function purify(string $string): string {
-        $lowerString = strtolower($string);
-
         foreach ($this->banword as $word) {
-            $wordLower = strtolower($word);
-            $stringLower = strtolower($string);
-
-            $pos = strpos($stringLower, $wordLower);
-
-            while ($pos !== false) {
-                $replacement = str_repeat('*', strlen($word));
-                $string = substr_replace($string, $replacement, $pos, strlen($word));
-
-                $stringLower = strtolower($string);
-
-                $pos = strpos($stringLower, $wordLower, $pos + strlen($word));
-            }
+            $replacement = str_repeat('*', strlen($word));
+            $string = str_ireplace($word, $replacement, $string);
         }
 
         return $string;
