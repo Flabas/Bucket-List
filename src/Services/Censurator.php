@@ -29,7 +29,6 @@ class Censurator
     public function purify(string $string): string {
         $lowerString = strtolower($string);
 
-        // Parcourir chaque mot interdit
         foreach ($this->banword as $word) {
             $wordLower = strtolower($word);
             $stringLower = strtolower($string);

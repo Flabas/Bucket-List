@@ -8,4 +8,3 @@ merde
 enculé
 enculer
 nique
-

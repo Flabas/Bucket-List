@@ -159,6 +159,100 @@
                 {% endfor %}
             </div>
         </div>
+
+        <!-- Pagination -->
+        {% if totalPages > 1 %}
+            <div class="pagination-section mt-5">
+                <nav aria-label="Navigation des pages d'idées">
+                    <ul class="pagination justify-content-center custom-pagination">
+                        <!-- Page précédente -->
+                        {% if page > 1 %}
+                            <li class="page-item">
+                                <a class="page-link custom-page-link"
+                                   href="{{ path('app_wish_list', {q: q, author: author, order: order, page: page - 1}) }}"
+                                   aria-label="Page précédente">
+                                    <i class="fas fa-chevron-left"></i>
+                                    <span class="d-none d-sm-inline ms-1">Précédent</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link custom-page-link">
+                                    <i class="fas fa-chevron-left"></i>
+                                    <span class="d-none d-sm-inline ms-1">Précédent</span>
+                                </span>
+                            </li>
+                        {% endif %}
+
+                        <!-- Pages numérotées -->
+                        {% set startPage = max(1, page - 2) %}
+                        {% set endPage = min(totalPages, page + 2) %}
+
+                        {% if startPage > 1 %}
+                            <li class="page-item">
+                                <a class="page-link custom-page-link"
+                                   href="{{ path('app_wish_list', {q: q, author: author, order: order, page: 1}) }}">1</a>
+                            </li>
+                            {% if startPage > 2 %}
+                                <li class="page-item disabled">
+                                    <span class="page-link custom-page-link">...</span>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+
+                        {% for pageNumber in startPage..endPage %}
+                            <li class="page-item {% if pageNumber == page %}active{% endif %}">
+                                {% if pageNumber == page %}
+                                    <span class="page-link custom-page-link active">{{ pageNumber }}</span>
+                                {% else %}
+                                    <a class="page-link custom-page-link"
+                                       href="{{ path('app_wish_list', {q: q, author: author, order: order, page: pageNumber}) }}">{{ pageNumber }}</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+
+                        {% if endPage < totalPages %}
+                            {% if endPage < totalPages - 1 %}
+                                <li class="page-item disabled">
+                                    <span class="page-link custom-page-link">...</span>
+                                </li>
+                            {% endif %}
+                            <li class="page-item">
+                                <a class="page-link custom-page-link"
+                                   href="{{ path('app_wish_list', {q: q, author: author, order: order, page: totalPages}) }}">{{ totalPages }}</a>
+                            </li>
+                        {% endif %}
+
+                        <!-- Page suivante -->
+                        {% if page < totalPages %}
+                            <li class="page-item">
+                                <a class="page-link custom-page-link"
+                                   href="{{ path('app_wish_list', {q: q, author: author, order: order, page: page + 1}) }}"
+                                   aria-label="Page suivante">
+                                    <span class="d-none d-sm-inline me-1">Suivant</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link custom-page-link">
+                                    <span class="d-none d-sm-inline me-1">Suivant</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+
+                <!-- Informations de pagination -->
+                <div class="pagination-info text-center mt-3">
+                    <small class="text-muted">
+                        Page {{ page }} sur {{ totalPages }}
+                        ({{ totalItems }} idée{{ totalItems > 1 ? 's' : '' }} au total)
+                    </small>
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}
