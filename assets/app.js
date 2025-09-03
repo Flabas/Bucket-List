@@ -1,2 +1,5 @@
 import './bootstrap.js';
-import 'bootstrap';
+import './styles/app.css';
+
+// Import du script pour la navbar améliorée
+import './scripts/navbar.js';

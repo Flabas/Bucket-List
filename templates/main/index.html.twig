@@ -3,23 +3,109 @@
 {% block title %}Accueil - Bucket-List{% endblock %}
 
 {% block body %}
-<div class="py-4">
-    <div class="p-5 mb-4 bg-body-secondary rounded-3">
-        <div class="container py-5">
-            <h1 class="display-5 fw-bold mb-3 d-flex align-items-center gap-2">
-                <img src="{{ asset('images/logo-512.png') }}" alt="Logo" style="width:48px;height:48px;">
-                Bienvenue {% if app.user%} {{app.user.pseudo}} {% endif%} sur Bucket-List
+<div class="py-4 page-enter">
+    <div class="hero-section p-5 mb-5 glass-effect position-relative overflow-hidden">
+        <div class="hero-background"></div>
+        <div class="container py-5 position-relative">
+            <h1 class="hero-title display-4 fw-bold mb-4 d-flex align-items-center gap-3 animate-fade-in-up">
+                <div class="hero-icon-wrapper">
+                    <img src="{{ asset('images/logo-512.png') }}" alt="Logo" class="hero-icon">
+                </div>
+                <span class="text-gradient">
+                    Bienvenue {% if app.user %}<strong class="user-highlight">{{ app.user.pseudo }}</strong>{% endif %} sur Bucket-List
+                </span>
             </h1>
-            <p class="col-md-10 col-lg-8 fs-5 text-secondary mb-4">
+            <p class="hero-subtitle col-md-10 col-lg-8 fs-5 text-muted mb-5 animate-fade-in-up" style="animation-delay: 0.2s;">
                 Collectez, explorez et réalisez vos meilleures idées de vie. Parcourez les inspirations de la communauté
                 et gardez une trace de ce que vous souhaitez accomplir.
             </p>
-            <div class="d-flex gap-2">
-                <a class="btn btn-primary btn-lg" href="{{ path('app_wish_list') }}">Découvrir les idées</a>
-                <a class="btn btn-outline-secondary btn-lg" href="{{ path('app_about') }}">En savoir plus</a>
+            <div class="hero-actions d-flex gap-3 animate-fade-in-up" style="animation-delay: 0.4s;">
+                <a class="btn btn-primary btn-lg custom-btn-primary hover-lift" href="{{ path('app_wish_list') }}">
+                    <i class="fas fa-rocket me-2"></i>
+                    Découvrir les idées
+                </a>
+                <a class="btn btn-outline-primary btn-lg custom-btn-outline hover-scale" href="{{ path('app_about') }}">
+                    <i class="fas fa-info-circle me-2"></i>
+                    En savoir plus
+                </a>
+            </div>
+        </div>
+        <div class="hero-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+
+    <!-- Section statistiques -->
+    <div class="stats-section mb-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-card card border-0 hover-lift">
+                    <div class="card-body text-center">
+                        <div class="stat-icon mb-3">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3 class="stat-number text-gradient">∞</h3>
+                        <p class="stat-label text-muted mb-0">Idées créatives</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card card border-0 hover-lift">
+                    <div class="card-body text-center">
+                        <div class="stat-icon mb-3">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="stat-number text-gradient">+</h3>
+                        <p class="stat-label text-muted mb-0">Communauté active</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card card border-0 hover-lift">
+                    <div class="card-body text-center">
+                        <div class="stat-icon mb-3">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="stat-number text-gradient">✓</h3>
+                        <p class="stat-label text-muted mb-0">Rêves réalisés</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Section features -->
+    <div class="features-section">
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="feature-card glass-effect p-4 h-100 hover-lift">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="feature-title h4 mb-3 text-gradient">Partagez vos passions</h3>
+                    <p class="feature-description text-muted">
+                        Créez votre liste personnalisée d'expériences uniques et partagez-la avec la communauté.
+                        Inspirez et laissez-vous inspirer par les idées des autres.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="feature-card glass-effect p-4 h-100 hover-lift">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <h3 class="feature-title h4 mb-3 text-gradient">Explorez l'inconnu</h3>
+                    <p class="feature-description text-muted">
+                        Découvrez de nouvelles aventures, activités et expériences proposées par notre communauté
+                        passionnée de voyageurs et d'explorateurs.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

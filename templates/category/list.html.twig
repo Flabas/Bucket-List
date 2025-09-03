@@ -1,74 +1,202 @@
 {% extends 'base.html.twig' %}
-{% block title %}Catégories{% endblock %}
+
+{% block title %}Gestion des catégories - Bucket-List{% endblock %}
+
 {% block body %}
-<div class="card shadow-sm border-0">
-    <div class="card-body">
-        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
-            <h1 class="h3 mb-0">Catégories</h1>
-            <div class="d-flex gap-2 w-100 w-md-auto">
-                <input id="category-search" type="search" class="form-control" placeholder="Rechercher une catégorie…" aria-label="Rechercher">
-                {% if app.user and 'ROLE_ADMIN' in app.user.getRoles() %}
-                    <a href="{{ path('app_category_create') }}" class="btn btn-primary">+ Créer</a>
-                {% endif %}
+<div class="py-4 page-enter">
+    <!-- Header de la page -->
+    <div class="page-header glass-effect p-4 mb-5 position-relative overflow-hidden">
+        <div class="header-background"></div>
+        <div class="d-flex align-items-center justify-content-between position-relative">
+            <h1 class="page-title h2 mb-0 d-flex align-items-center gap-3 text-gradient animate-fade-in-up">
+                <div class="page-icon">
+                    <i class="fas fa-tags"></i>
+                </div>
+                Gestion des catégories
+            </h1>
+            <a href="{{ path('app_category_create') }}" class="btn btn-primary custom-btn-primary hover-lift animate-fade-in-up" style="animation-delay: 0.2s;">
+                <i class="fas fa-plus me-2"></i>
+                Nouvelle catégorie
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiques rapides -->
+    <div class="stats-section mb-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-card card border-0 hover-lift">
+                    <div class="card-body text-center">
+                        <div class="stat-icon mb-3">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <h3 class="stat-number text-gradient">{{ categories|length }}</h3>
+                        <p class="stat-label text-muted mb-0">Catégories totales</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card card border-0 hover-lift">
+                    <div class="card-body text-center">
+                        <div class="stat-icon mb-3">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="stat-number text-gradient">Admin</h3>
+                        <p class="stat-label text-muted mb-0">Mode gestion</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card card border-0 hover-lift">
+                    <div class="card-body text-center">
+                        <div class="stat-icon mb-3">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3 class="stat-number text-gradient">✓</h3>
+                        <p class="stat-label text-muted mb-0">Configuration</p>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
-        {% if categories is empty %}
-            <div class="alert alert-info mb-0">Aucune catégorie pour le moment.</div>
-        {% else %}
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="category-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">Nom</th>
-                            {% if app.user and 'ROLE_ADMIN' in app.user.getRoles() %}
-                                <th scope="col" class="text-center" style="width: 220px;">Actions</th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for category in categories %}
-                            <tr data-name="{{ category.name|lower }}">
-                                <td>{{ category.name }}</td>
-                                {% if app.user and 'ROLE_ADMIN' in app.user.getRoles() %}
-                                    <td class="text-center">
-                                        <div class="d-inline-flex gap-2">
-                                            <a href="{{ path('app_category_edit', {id: category.id}) }}" class="btn btn-warning btn-sm">
-                                                Modifier
-                                            </a>
-                                            <form method="post" action="{{ path('app_category_delete', {id: category.id}) }}" class="d-inline" onsubmit="return confirm('Supprimer cette catégorie ?');">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('delete_category_' ~ category.id) }}">
-                                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Liste des catégories -->
+    {% if categories is empty %}
+        <div class="empty-state text-center py-5">
+            <div class="empty-icon mb-4">
+                <i class="fas fa-folder-open"></i>
             </div>
-        {% endif %}
+            <h3 class="empty-title h4 text-gradient mb-3">Aucune catégorie</h3>
+            <p class="empty-description text-muted mb-4">
+                Commencez par créer votre première catégorie pour organiser les idées.
+            </p>
+            <a href="{{ path('app_category_create') }}" class="btn btn-primary custom-btn-primary hover-lift">
+                <i class="fas fa-plus me-2"></i>
+                Créer la première catégorie
+            </a>
+        </div>
+    {% else %}
+        <div class="categories-section">
+            <div class="card custom-card border-0">
+                <div class="card-header custom-card-header">
+                    <i class="fas fa-list me-2"></i>
+                    Liste des catégories ({{ categories|length }})
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 custom-table">
+                            <thead>
+                                <tr>
+                                    <th class="border-0">
+                                        <i class="fas fa-hashtag me-2"></i>
+                                        ID
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-tag me-2"></i>
+                                        Nom de la catégorie
+                                    </th>
+                                    <th class="border-0">
+                                        <i class="fas fa-folder me-2"></i>
+                                        Nombre d'idées
+                                    </th>
+                                    <th class="border-0 text-center">
+                                        <i class="fas fa-tools me-2"></i>
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in categories %}
+                                    <tr class="category-row animate-fade-in-scale" style="animation-delay: {{ loop.index0 * 0.05 }}s;">
+                                        <td class="align-middle">
+                                            <span class="badge bg-primary custom-badge">
+                                                #{{ category.id }}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="category-icon">
+                                                    <i class="fas fa-folder text-primary"></i>
+                                                </div>
+                                                <span class="category-name fw-semibold">{{ category.name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-muted">
+                                            <i class="fas fa-folder me-1"></i>
+                                            {{ category.wishes|length }} idée(s)
+                                        </td>
+                                        <td class="align-middle">
+                                            <div class="action-buttons d-flex justify-content-center gap-2">
+                                                <a href="{{ path('app_category_edit', {'id': category.id}) }}"
+                                                   class="btn btn-outline-primary btn-sm custom-btn-outline hover-scale"
+                                                   title="Modifier cette catégorie">
+                                                    <i class="fas fa-edit"></i>
+                                                    <span class="d-none d-md-inline ms-1">Modifier</span>
+                                                </a>
+
+                                                <form method="post" action="{{ path('app_category_delete', {'id': category.id}) }}"
+                                                      class="d-inline-block"
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_category_' ~ category.id) }}">
+                                                    <button type="submit"
+                                                            class="btn btn-outline-danger btn-sm custom-btn-danger hover-scale"
+                                                            title="Supprimer cette catégorie">
+                                                        <i class="fas fa-trash"></i>
+                                                        <span class="d-none d-md-inline ms-1">Supprimer</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Actions rapides -->
+    <div class="quick-actions mt-5">
+        <div class="card custom-card border-0">
+            <div class="card-header custom-card-header">
+                <i class="fas fa-bolt me-2"></i>
+                Actions rapides
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="{{ path('app_category_create') }}"
+                           class="action-card d-block text-decoration-none p-3 rounded hover-lift">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="action-icon">
+                                    <i class="fas fa-plus-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 text-gradient">Ajouter une catégorie</h6>
+                                    <small class="text-muted">Créer une nouvelle catégorie</small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ path('app_wish_list') }}"
+                           class="action-card d-block text-decoration-none p-3 rounded hover-lift">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="action-icon">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 text-gradient">Voir les idées</h6>
+                                    <small class="text-muted">Retourner à la liste des idées</small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const input = document.getElementById('category-search');
-            const rows = Array.from(document.querySelectorAll('#category-table tbody tr'));
-            if (!input || rows.length === 0) return;
-            const normalize = (s) => (s || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-            input.addEventListener('input', () => {
-                const q = normalize(input.value);
-                rows.forEach(tr => {
-                    const nameText = tr.querySelector('td') ? tr.querySelector('td').textContent : '';
-                    const name = normalize(nameText);
-                    tr.style.display = name.includes(q) ? '' : 'none';
-                });
-            });
-        });
-    </script>
 {% endblock %}

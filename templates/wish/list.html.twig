@@ -3,110 +3,162 @@
 {% block title %}Idées - Bucket-List{% endblock %}
 
 {% block body %}
-<div class="py-4">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <h1 class="h3 mb-0">📝 Liste des idées</h1>
-        <a href="{{ path('app_wish_formWish') }}" class="btn btn-primary">Ajouter une idée</a>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" action="{{ path('app_wish_list') }}" class="row g-3 align-items-end">
-                <div class="col-sm-6 col-md-4 col-lg-3">
-                    <label for="q" class="form-label">Rechercher</label>
-                    <input id="q" type="search" name="q" class="form-control" placeholder="Rechercher une idée..." value="{{ q|default('') }}">
+<div class="py-4 page-enter">
+    <!-- Header de la page -->
+    <div class="page-header glass-effect p-4 mb-5 position-relative overflow-hidden">
+        <div class="header-background"></div>
+        <div class="d-flex align-items-center justify-content-between position-relative">
+            <h1 class="page-title h2 mb-0 d-flex align-items-center gap-3 text-gradient animate-fade-in-up">
+                <div class="page-icon">
+                    <i class="fas fa-lightbulb"></i>
                 </div>
-                <div class="col-sm-6 col-md-3 col-lg-3">
-                    <label for="author" class="form-label">Auteur</label>
-                    <select id="author" name="author" class="form-select">
-                        <option value="">Tous les auteurs</option>
-                        {% for a in authors %}
-                            <option value="{{ a }}" {% if author is defined and author == a %}selected{% endif %}>{{ a }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-sm-6 col-md-3 col-lg-3">
-                    <label for="order" class="form-label">Date</label>
-                    <select id="order" name="order" class="form-select">
-                        <option value="DESC" {% if order|upper == 'DESC' %}selected{% endif %}>Plus récentes d'abord</option>
-                        <option value="ASC" {% if order|upper == 'ASC' %}selected{% endif %}>Plus anciennes d'abord</option>
-                    </select>
-                </div>
-                <div class="col-sm-6 col-md-2 col-lg-3">
-                    <button type="submit" class="btn btn-primary w-100">Filtrer</button>
-                </div>
-                {% if q or author or (order and order != 'DESC') %}
-                    <div class="col-12">
-                        <a href="{{ path('app_wish_list') }}" class="btn btn-outline-secondary btn-sm">Réinitialiser les filtres</a>
-                    </div>
-                {% endif %}
-            </form>
+                Liste des idées
+            </h1>
+            <a href="{{ path('app_wish_formWish') }}" class="btn btn-primary custom-btn-primary hover-lift animate-fade-in-up" style="animation-delay: 0.2s;">
+                <i class="fas fa-plus me-2"></i>
+                Ajouter une idée
+            </a>
         </div>
     </div>
 
+    <!-- Filtres -->
+    <div class="filters-section mb-5">
+        <div class="card custom-card border-0 shadow-sm">
+            <div class="card-header custom-card-header">
+                <i class="fas fa-filter me-2"></i>
+                Filtres de recherche
+            </div>
+            <div class="card-body">
+                <form method="get" action="{{ path('app_wish_list') }}" class="row g-3 align-items-end">
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <label for="q" class="form-label custom-label">
+                            <i class="fas fa-search me-1"></i>
+                            Rechercher
+                        </label>
+                        <input id="q" type="search" name="q" class="form-control custom-input" placeholder="Rechercher une idée..." value="{{ q|default('') }}">
+                    </div>
+                    <div class="col-sm-6 col-md-3 col-lg-3">
+                        <label for="author" class="form-label custom-label">
+                            <i class="fas fa-user me-1"></i>
+                            Auteur
+                        </label>
+                        <select id="author" name="author" class="form-select custom-select">
+                            <option value="">Tous les auteurs</option>
+                            {% for a in authors %}
+                                <option value="{{ a }}" {% if author is defined and author == a %}selected{% endif %}>{{ a }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-6 col-md-3 col-lg-3">
+                        <label for="order" class="form-label custom-label">
+                            <i class="fas fa-sort me-1"></i>
+                            Date
+                        </label>
+                        <select id="order" name="order" class="form-select custom-select">
+                            <option value="DESC" {% if order|upper == 'DESC' %}selected{% endif %}>Plus récentes d'abord</option>
+                            <option value="ASC" {% if order|upper == 'ASC' %}selected{% endif %}>Plus anciennes d'abord</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6 col-md-2 col-lg-3">
+                        <button type="submit" class="btn btn-primary custom-btn-primary w-100 hover-lift">
+                            <i class="fas fa-search me-2"></i>
+                            Filtrer
+                        </button>
+                    </div>
+                    {% if q or author or (order and order != 'DESC') %}
+                        <div class="col-12">
+                            <a href="{{ path('app_wish_list') }}" class="btn btn-outline-secondary custom-btn-outline btn-sm hover-scale">
+                                <i class="fas fa-undo me-2"></i>
+                                Réinitialiser les filtres
+                            </a>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Résultats -->
     {% if wishes is not defined or wishes is empty %}
-        <div class="alert alert-info">Aucune idée trouvée{% if q is defined and q %} pour « {{ q }} »{% endif %}.</div>
+        <div class="empty-state text-center py-5">
+            <div class="empty-icon mb-4">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3 class="empty-title h4 text-gradient mb-3">Aucune idée trouvée</h3>
+            <p class="empty-description text-muted mb-4">
+                {% if q is defined and q %}
+                    Aucun résultat pour « <strong>{{ q }}</strong> ».
+                {% else %}
+                    Il n'y a pas encore d'idées à afficher.
+                {% endif %}
+            </p>
+            <a href="{{ path('app_wish_formWish') }}" class="btn btn-primary custom-btn-primary hover-lift">
+                <i class="fas fa-plus me-2"></i>
+                Créer la première idée
+            </a>
+        </div>
     {% else %}
         {% if q is defined and q or author is defined and author or order is defined and order %}
-            <p class="text-secondary mb-3">
-                {% set parts = [] %}
-                {% if q %}{% set parts = parts|merge(['<span class="badge text-bg-light">« ' ~ q ~ ' »</span>']) %}{% endif %}
-                {% if author %}{% set parts = parts|merge(['<span class="badge text-bg-light">auteur: ' ~ author ~ '</span>']) %}{% endif %}
-                {% if order %}{% set parts = parts|merge(['<span class="badge text-bg-light">tri: ' ~ (order == 'ASC' ? 'plus anciennes' : 'plus récentes') ~ '</span>']) %}{% endif %}
-                Filtres: {{ parts|join(' ')|raw }} — {{ wishes|length }} idée(s)
-            </p>
+            <div class="search-results mb-4">
+                <div class="results-info glass-effect p-3 d-flex align-items-center gap-2">
+                    <i class="fas fa-info-circle text-primary"></i>
+                    <span class="text-muted">
+                        {{ wishes|length }} résultat(s) trouvé(s)
+                        {% if q %} pour « <strong>{{ q }}</strong> »{% endif %}
+                        {% if author %} par <strong>{{ author }}</strong>{% endif %}
+                    </span>
+                </div>
+            </div>
         {% endif %}
 
-        <div class="row g-3">
-            {% for wish in wishes %}
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100">
-                        {% if wish.image %}
-                            <div class="ratio ratio-16x9">
-                                <img src="{{ asset('uploads/' ~ wish.image) }}"
-                                     alt="{{ wish.title }}"
-                                     class="img-fluid rounded-top"
-                                     style="object-fit: cover; width: 100%; height: 100%;">
-                            </div>
-                        {% endif %}
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title mb-2"><a href="{{ path('app_wish_detail', { id: wish.id }) }}" class="stretched-link text-decoration-none">{{ wish.title }}</a></h5>
-                            <div class="d-flex flex-wrap gap-2 mb-2">
-                                <span class="badge text-bg-light">{{ wish.author }}</span>
-                                <span class="badge text-bg-light">{{ wish.dateCreated|date('d/m/Y') }}</span>
-                                {% if wish.category %}
-                                    <span class="badge text-bg-light">{{ wish.category.name }}</span>
-                                {% endif %}
-                            </div>
-                            {% if wish.description %}
-                                <p class="card-text text-secondary">{{ wish.description }}</p>
+        <!-- Grille des idées -->
+        <div class="wishes-grid">
+            <div class="row g-4">
+                {% for wish in wishes %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="wish-card card custom-card border-0 h-100 hover-lift animate-fade-in-scale" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+                            {% if wish.image %}
+                                <div class="wish-image-container position-relative overflow-hidden">
+                                    <img src="{{ asset('uploads/' ~ wish.image) }}"
+                                         alt="{{ wish.title }}"
+                                         class="card-img-top wish-image">
+                                    <div class="wish-overlay"></div>
+                                </div>
                             {% endif %}
-                        </div>
-                        <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3 d-flex justify-content-end">
-                            <a href="{{ path('app_wish_detail', { id: wish.id }) }}" class="btn btn-sm btn-outline-primary">🔎 Détails</a>
+
+                            <div class="card-body d-flex flex-column">
+                                <div class="wish-meta mb-2">
+                                    <span class="badge bg-primary custom-badge">
+                                        <i class="fas fa-user me-1"></i>
+                                        {{ wish.author }}
+                                    </span>
+                                    <span class="badge bg-success custom-badge ms-2">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ wish.dateCreated|date('d/m/Y') }}
+                                    </span>
+                                </div>
+
+                                <h5 class="wish-title card-title text-gradient mb-3">
+                                    {{ wish.title }}
+                                </h5>
+
+                                <p class="wish-description card-text text-muted flex-grow-1">
+                                    {{ wish.description|length > 100 ? wish.description|slice(0, 100) ~ '...' : wish.description }}
+                                </p>
+
+                                <div class="wish-actions mt-auto pt-3">
+                                    <a href="{{ path('app_wish_detail', {'id': wish.id}) }}"
+                                       class="btn btn-outline-primary custom-btn-outline btn-sm hover-scale">
+                                        <i class="fas fa-eye me-2"></i>
+                                        Voir détails
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        {% if totalPages > 1 %}
-        <nav class="mt-4 d-flex justify-content-center" aria-label="Pagination">
-            <ul class="pagination pagination-lg gap-1">
-                <li class="page-item {% if page == 1 %}disabled{% endif %}">
-                    <a class="page-link" href="{{ path('app_wish_list', { q: q, author: author, order: order, page: page - 1 }) }}">&laquo;</a>
-                </li>
-                {% for p in 1..totalPages %}
-                    <li class="page-item {% if p == page %}active{% endif %}">
-                        <a class="page-link" href="{{ path('app_wish_list', { q: q, author: author, order: order, page: p }) }}">{{ p }}</a>
-                    </li>
                 {% endfor %}
-                <li class="page-item {% if page == totalPages %}disabled{% endif %}">
-                    <a class="page-link" href="{{ path('app_wish_list', { q: q, author: author, order: order, page: page + 1 }) }}">&raquo;</a>
-                </li>
-            </ul>
-        </nav>
-        {% endif %}
+            </div>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

@@ -1,0 +1,284 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon profil - Bucket-List{% endblock %}
+
+{% block body %}
+<div class="py-4 page-enter">
+    <!-- Header de la page -->
+    <div class="page-header glass-effect p-4 mb-5 position-relative overflow-hidden">
+        <div class="header-background"></div>
+        <div class="d-flex align-items-center gap-3 position-relative">
+            <a href="{{ path('app_profile_show') }}"
+               class="btn btn-outline-secondary custom-btn-outline hover-scale animate-fade-in-up">
+                <i class="fas fa-arrow-left me-2"></i>
+                Retour au profil
+            </a>
+            <h1 class="page-title h2 mb-0 d-flex align-items-center gap-3 text-gradient animate-fade-in-up" style="animation-delay: 0.1s;">
+                <div class="page-icon">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                Modifier mon profil
+            </h1>
+        </div>
+    </div>
+
+    <!-- Informations actuelles -->
+    <div class="user-info mb-4">
+        <div class="card custom-card border-0">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="user-avatar-large">
+                        <i class="fas fa-user-circle text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-1 text-gradient">Profil de {{ user.pseudo }}</h6>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted">{{ user.email }}</span>
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                <span class="badge bg-danger custom-badge">Admin</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulaire d'édition -->
+    <div class="form-section">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+                <div class="card custom-card border-0 hover-lift">
+                    <div class="card-header custom-card-header">
+                        <i class="fas fa-pen me-2"></i>
+                        Modifier les informations
+                    </div>
+                    <div class="card-body p-4">
+                        {{ form_start(form, {'attr': {'class': 'profile-form', 'novalidate': 'novalidate'}}) }}
+
+                        <!-- Champ pseudo -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.pseudo.vars.id }}" class="form-label custom-label">
+                                <i class="fas fa-user me-2"></i>
+                                {{ form.pseudo.vars.label }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-at"></i>
+                                </span>
+                                {{ form_widget(form.pseudo) }}
+                            </div>
+                            {{ form_errors(form.pseudo) }}
+                            <div class="form-text text-muted mt-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Votre pseudo public (2-30 caractères)
+                            </div>
+                        </div>
+
+                        <!-- Champ email -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.email.vars.id }}" class="form-label custom-label">
+                                <i class="fas fa-envelope me-2"></i>
+                                {{ form.email.vars.label }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                {{ form_widget(form.email) }}
+                            </div>
+                            {{ form_errors(form.email) }}
+                            <div class="form-text text-muted mt-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Votre adresse email de connexion
+                            </div>
+                        </div>
+
+                        <!-- Champ mot de passe -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.plainPassword.vars.id }}" class="form-label custom-label">
+                                <i class="fas fa-lock me-2"></i>
+                                {{ form.plainPassword.vars.label }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-key"></i>
+                                </span>
+                                {{ form_widget(form.plainPassword) }}
+                                <button type="button" class="btn btn-outline-secondary" id="toggle-password">
+                                    <i class="fas fa-eye" id="toggle-icon"></i>
+                                </button>
+                            </div>
+                            {{ form_errors(form.plainPassword) }}
+                            <div class="form-text text-muted mt-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Laissez vide pour conserver votre mot de passe actuel (minimum 6 caractères)
+                            </div>
+                        </div>
+
+                        <!-- Aperçu des modifications -->
+                        <div class="changes-preview mb-4">
+                            <h6 class="text-gradient mb-3">
+                                <i class="fas fa-eye me-2"></i>
+                                Aperçu des modifications
+                            </h6>
+                            <div class="preview-container p-3 rounded glass-effect">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="preview-item">
+                                            <small class="text-muted d-block">Pseudo actuel</small>
+                                            <span class="badge bg-secondary">{{ user.pseudo }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="preview-item">
+                                            <small class="text-muted d-block">Nouveau pseudo</small>
+                                            <span class="badge bg-primary custom-badge" id="preview-pseudo">{{ user.pseudo }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="preview-item">
+                                            <small class="text-muted d-block">Email actuel</small>
+                                            <span class="badge bg-secondary">{{ user.email }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="preview-item">
+                                            <small class="text-muted d-block">Nouvel email</small>
+                                            <span class="badge bg-primary custom-badge" id="preview-email">{{ user.email }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="form-actions d-flex gap-3 justify-content-end">
+                            <a href="{{ path('app_profile_show') }}"
+                               class="btn btn-outline-secondary custom-btn-outline hover-scale">
+                                <i class="fas fa-times me-2"></i>
+                                Annuler
+                            </a>
+                            <button type="submit"
+                                    class="btn btn-primary custom-btn-primary hover-lift"
+                                    id="save-btn">
+                                <i class="fas fa-save me-2"></i>
+                                Enregistrer les modifications
+                            </button>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+
+                <!-- Section de sécurité -->
+                <div class="security-section mt-4">
+                    <div class="card custom-card border-warning">
+                        <div class="card-header bg-warning text-dark">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            Sécurité du compte
+                        </div>
+                        <div class="card-body">
+                            <h6 class="text-warning mb-2">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Conseils de sécurité
+                            </h6>
+                            <ul class="security-tips text-muted mb-0">
+                                <li>Utilisez un mot de passe unique et complexe</li>
+                                <li>Ne partagez jamais vos identifiants</li>
+                                <li>Vérifiez régulièrement vos informations</li>
+                                <li>Déconnectez-vous sur les ordinateurs partagés</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pseudoInput = document.getElementById('user_profile_pseudo');
+    const emailInput = document.getElementById('user_profile_email');
+    const passwordInput = document.getElementById('user_profile_plainPassword');
+    const previewPseudo = document.getElementById('preview-pseudo');
+    const previewEmail = document.getElementById('preview-email');
+    const saveBtn = document.getElementById('save-btn');
+    const togglePasswordBtn = document.getElementById('toggle-password');
+    const toggleIcon = document.getElementById('toggle-icon');
+
+    const originalPseudo = '{{ user.pseudo }}';
+    const originalEmail = '{{ user.email }}';
+
+    // Toggle password visibility
+    if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            if (type === 'text') {
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        });
+    }
+
+    // Update previews in real time
+    function updatePreviews() {
+        const newPseudo = pseudoInput.value.trim() || originalPseudo;
+        const newEmail = emailInput.value.trim() || originalEmail;
+
+        previewPseudo.textContent = newPseudo;
+        previewEmail.textContent = newEmail;
+
+        // Check if changes were made
+        const pseudoChanged = newPseudo !== originalPseudo;
+        const emailChanged = newEmail !== originalEmail;
+        const passwordChanged = passwordInput.value.trim().length > 0;
+
+        if (pseudoChanged || emailChanged || passwordChanged) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Enregistrer les modifications';
+        } else {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-info-circle me-2"></i>Aucune modification';
+        }
+    }
+
+    // Add event listeners
+    pseudoInput.addEventListener('input', updatePreviews);
+    emailInput.addEventListener('input', updatePreviews);
+    passwordInput.addEventListener('input', updatePreviews);
+
+    // Initial state
+    updatePreviews();
+
+    // Form validation
+    const form = document.querySelector('.profile-form');
+    form.addEventListener('submit', function(e) {
+        const pseudo = pseudoInput.value.trim();
+        const email = emailInput.value.trim();
+
+        if (pseudo.length < 2 || pseudo.length > 30) {
+            e.preventDefault();
+            pseudoInput.classList.add('is-invalid');
+            return;
+        }
+
+        if (!email.includes('@')) {
+            e.preventDefault();
+            emailInput.classList.add('is-invalid');
+            return;
+        }
+
+        // Remove invalid classes
+        pseudoInput.classList.remove('is-invalid');
+        emailInput.classList.remove('is-invalid');
+    });
+});
+</script>
+{% endblock %}
