@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use App\Services\Censurator;
 
 #[Route('/wishes', name: 'app_wish_')]
 final class WishController extends AbstractController
@@ -60,7 +61,7 @@ final class WishController extends AbstractController
 
     // Formulaire de création d'une idée
     #[Route('/formWish', name: 'formWish', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, FileManager $fileManager): Response
+    public function new(Request $request, EntityManagerInterface $em, FileManager $fileManager, Censurator $censurator): Response
     {
         $wish = new Wish();
         $user = $this->getUser();
@@ -74,6 +75,13 @@ final class WishController extends AbstractController
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
+                $originalDescription = $wish->getDescription();
+                $censoredDescription = $censurator->purify($originalDescription);
+                $originalTitle = $wish->getTitle();
+                $censoredTitle = $censurator->purify($originalTitle);
+                $wish->setTitle($censoredTitle);
+                $wish->setDescription($censoredDescription);
+
                 $file = $form->get('image')->getData();
                 if ($file instanceof UploadedFile) {
                     try {
@@ -105,7 +113,7 @@ final class WishController extends AbstractController
 
     // Formulaire d'édition d'une idée
     #[Route('/{id}/edit', name: 'edit', requirements: ['id' => '\\d+'], methods: ['GET', 'POST'])]
-    public function edit(Request $request, Wish $wish = null, EntityManagerInterface $em, FileManager $fileManager): Response
+    public function edit(Request $request, Wish $wish = null, EntityManagerInterface $em, FileManager $fileManager, Censurator $censurator): Response
     {
         if (!$wish) {
             throw $this->createNotFoundException('Idée introuvable');
@@ -127,9 +135,15 @@ final class WishController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $originalDescription = $wish->getDescription();
+            $censoredDescription = $censurator->purify($originalDescription);
+            $originalTitle = $wish->getTitle();
+            $censoredTitle = $censurator->purify($originalTitle);
+            $wish->setTitle($censoredTitle);
+            $wish->setDescription($censoredDescription);
             $file = $form->get('image')->getData();
             if ($file instanceof UploadedFile) {
-                if ($name = $fileManager->upload($file, 'uploads', $form->get('image')->getName(), $wish->getImage())) {
+                if ($name = $fileManager->upload($file, 'uploads', $form->get('image')->getName(), $wish->getImage() ?? '')) {
                     $wish->setImage($name);
                 }
             }
