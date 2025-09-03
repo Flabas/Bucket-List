@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier la catégorie{% endblock %}
+{% block body %}
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h4 mb-0">Modifier la catégorie</h1>
+            <a href="{{ path('app_category_list') }}" class="btn btn-outline-secondary btn-sm">Retour</a>
+        </div>
+        <form method="post" novalidate>
+            <input type="hidden" name="_token" value="{{ csrf_token('edit_category_' ~ category.id) }}">
+            <div class="mb-3">
+                <label for="name" class="form-label">Nom de la catégorie</label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ app.request.request.get('name') ?? category.name }}" required>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-warning">Modifier</button>
+                <a href="{{ path('app_category_list') }}" class="btn btn-outline-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

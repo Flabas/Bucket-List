@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Category;
 use App\Entity\Wish;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
@@ -23,12 +24,22 @@ class WishFixtures extends Fixture implements DependentFixtureInterface
             CategoryFixtures::CAT_OTHERS,
         ];
 
-        for ($i = 0; $i < 3; $i++) {
+        // Récupérer les utilisateurs pour choisir un auteur existant
+        $users = $manager->getRepository(User::class)->findAll();
+        if (count($users) === 0) {
+            // Pas d'utilisateurs: on ne crée pas de souhaits pour éviter des auteurs incohérents
+            return;
+        }
+
+        for ($i = 0; $i < 20; $i++) {
+            $user = $faker->randomElement($users);
+
             $wish = new Wish();
             $wish
-                ->setTitle($faker->unique()->realText(200))
-                ->setDescription($faker->optional()->paragraphs(random_int(1, 3), true))
-                ->setAuthor($faker->name())
+                ->setTitle($faker->unique()->sentence(random_int(3, 6)))
+                ->setDescription($faker->paragraphs(1, true))
+                ->setAuthor($user->getPseudo())
+                ->setImage('snowfall.jpg')
                 ->setIsPublished(true)
                 ->setDateCreated($faker->dateTimeBetween('-1 year', 'now'))
                 ->setCategory($this->getReference($faker->randomElement($categoryRefs), Category::class))
@@ -42,6 +53,9 @@ class WishFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return [CategoryFixtures::class];
+        return [
+            CategoryFixtures::class,
+            UserFixtures::class,
+        ];
     }
 }

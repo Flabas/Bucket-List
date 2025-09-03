@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+{% block title %}Catégories{% endblock %}
+{% block body %}
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+            <h1 class="h3 mb-0">Catégories</h1>
+            <div class="d-flex gap-2 w-100 w-md-auto">
+                <input id="category-search" type="search" class="form-control" placeholder="Rechercher une catégorie…" aria-label="Rechercher">
+                {% if app.user and 'ROLE_ADMIN' in app.user.getRoles() %}
+                    <a href="{{ path('app_category_create') }}" class="btn btn-primary">+ Créer</a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if categories is empty %}
+            <div class="alert alert-info mb-0">Aucune catégorie pour le moment.</div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="category-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Nom</th>
+                            {% if app.user and 'ROLE_ADMIN' in app.user.getRoles() %}
+                                <th scope="col" class="text-center" style="width: 220px;">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                            <tr data-name="{{ category.name|lower }}">
+                                <td>{{ category.name }}</td>
+                                {% if app.user and 'ROLE_ADMIN' in app.user.getRoles() %}
+                                    <td class="text-center">
+                                        <div class="d-inline-flex gap-2">
+                                            <a href="{{ path('app_category_edit', {id: category.id}) }}" class="btn btn-warning btn-sm">
+                                                Modifier
+                                            </a>
+                                            <form method="post" action="{{ path('app_category_delete', {id: category.id}) }}" class="d-inline" onsubmit="return confirm('Supprimer cette catégorie ?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete_category_' ~ category.id) }}">
+                                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('category-search');
+            const rows = Array.from(document.querySelectorAll('#category-table tbody tr'));
+            if (!input || rows.length === 0) return;
+            const normalize = (s) => (s || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            input.addEventListener('input', () => {
+                const q = normalize(input.value);
+                rows.forEach(tr => {
+                    const nameText = tr.querySelector('td') ? tr.querySelector('td').textContent : '';
+                    const name = normalize(nameText);
+                    tr.style.display = name.includes(q) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Wish;
 use App\Form\WishType;
 use App\Repository\WishRepository;
+use App\Repository\CommentRepository;
 use App\Services\FileManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,14 +44,17 @@ final class WishController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\\d+'], methods: ['GET'])]
-    public function detail(Wish $wish = null): Response
+    public function detail(Wish $wish = null, CommentRepository $commentRepository): Response
     {
         if (!$wish) {
             throw $this->createNotFoundException('Idée introuvable');
         }
 
+        $comments = $commentRepository->findByWishOrdered($wish);
+
         return $this->render('wish/detail.html.twig', [
             'wish' => $wish,
+            'comments' => $comments,
         ]);
     }
 

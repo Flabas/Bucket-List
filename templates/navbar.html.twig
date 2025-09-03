@@ -18,9 +18,17 @@
                 <li class="nav-item">
                     <a class="nav-link {{ app.request.attributes.get('_route') == 'app_about' ? 'active' }}" href="{{ path('app_about') }}">About us</a>
                 </li>
+                {% if app.user and 'ROLE_ADMIN' in app.user.getRoles() %}
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.attributes.get('_route') starts with 'app_category_' ? 'active' }}" href="{{ path('app_category_list') }}">Catégories</a>
+                    </li>
+                {% endif %}
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 {% if app.user %}
+                    <p class="nav-item">
+                        <span class="me-2">Bonjour, <strong>{{ app.user.pseudo }}</strong>!</span>
+                    </p>
                     <li class="nav-item">
                         <a class="nav-link {{ app.request.attributes.get('_route') == 'app_logout' ? 'active' }}" href="{{ path('app_logout') }}">Déconnexion</a>
                     </li>
